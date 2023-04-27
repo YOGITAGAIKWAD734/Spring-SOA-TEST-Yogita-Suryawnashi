@@ -1,0 +1,42 @@
+/*
+ * @Author : Yogita Suryawanshi
+ * @Description : Build a basic lightning component that can query a list of 10 most recently created accounts and display it using a lightning app. 
+ * @Created Date : 27/04/2023
+*/
+public class getAccount {
+    @AuraEnabled
+    public static list<account> getacclist(){
+        
+        list<account> acclist = new list<account>([select Id,name,CreatedDate,Phone from Account  order by CreatedDate desc limit 10 ]);
+        return acclist;
+    }
+
+}
+=======================================================================================================================================
+<aura:component controller = "getAccount" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:attribute type="Account[]" name="acctList"/>
+    <aura:attribute name="mycolumns" type="List"/>
+      
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}"/>
+      
+    <lightning:datatable data="{! v.acctList }"
+                         columns="{! v.mycolumns }"
+                         keyField="id"
+                         hideCheckboxColumn="true"/>
+</aura:component>
+=======================================================================================================================================
+({
+	doinit : function(component, event, helper) {
+	 component.set('v.mycolumns', [
+            {label: 'Account Name', fieldName: 'Name', type: 'text'},
+                {label: 'Email', fieldName: 'Email', type: 'Email'},
+                {label: 'Phone', fieldName: 'Phone', type: 'Phone'}
+            ]);
+        var action = component.get("c.getacclist");
+        action.setCallback(this, function(response){
+        component.set("v.acctList", response.getReturnValue());
+        });
+        $A.enqueueAction(action);	
+	}
+})
+====================================================================================================================================

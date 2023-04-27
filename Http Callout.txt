@@ -1,0 +1,23 @@
+/*
+ * @Author : Yogita Suryawanshi
+ * @Description : Make a basic http callout and print result using System.debeg
+                  https://postman-echo.com/get?foo1=bar1&foo2=bar2
+ * @Created Date : 27-04-2023
+*/
+public class HttpCalloutSample {
+    public static String getCalloutResponseContents() {
+        String callOutResponse = '';
+         Http htObj = new Http();
+
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(Label.pmendpoint);
+        req.setMethod('GET');
+  
+        HttpResponse res = htObj.send(req);
+
+        if(res.getStatusCode() == 200) {
+            callOutResponse = res.getBody();
+        }
+        return callOutResponse;
+    }
+}

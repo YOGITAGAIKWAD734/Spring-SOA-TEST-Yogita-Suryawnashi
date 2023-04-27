@@ -1,0 +1,52 @@
+/*@Author: Yogita Suryawanshi
+ *Description: Create a field on Account named "Number of Contacts". Populate this field with the number of contacts related to an account. 
+ *Date:27/04/2023
+ */
+trigger ContactTrigger on Contact (after insert,after delete,after undelete) {
+    if(Trigger.isInsert){
+        if(Trigger.isAfter){
+            ContactTriggerHandler.UpdateNumberofContactOnAccount(Trigger.New);
+        }
+    }
+    if(Trigger.isDelete){
+        if(Trigger.isAfter){
+            ContactTriggerHandler.UpdateNumberofContactOnAccount(Trigger.Old);
+        }  
+    }
+    if(Trigger.isUndelete){
+        if(Trigger.isAfter){
+            ContactTriggerHandler.UpdateNumberofContactOnAccount(Trigger.New);
+        }
+    }
+}
+
+===============================================================================================================================================
+/*@Author: Yogita Suryawanshi
+ *Description: Create a field on Account named "Number of Contacts". Populate this field with the number of contacts related to an account. 
+ *Date:27/04/2023
+ */
+public class ContactTriggerHandler {
+    public Static void UpdateNumberofContactOnAccount(list<Contact>conlist){
+        List<Account>accList = new List<Account>();
+        Set<id> idSet = new Set<id>();
+        for(contact con : conlist){
+            if(con.AccountId != null){
+                idSet.add(con.AccountId);
+            }
+        }
+        for(Account acc:[SELECT id,Name,(SELECT id FROM contacts)FROM Account where id IN:idSet]){
+            acc.Number_Of_Contacts__c = acc.contacts.size();
+            accList.add(acc);
+        }
+         try{
+             if(accList.size() > 0){
+                 update accList;
+        	 }
+         }
+         
+        catch(exception ex){
+            System.debug(ex);
+        }
+    }
+
+}
